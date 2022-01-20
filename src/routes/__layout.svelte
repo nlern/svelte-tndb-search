@@ -1,8 +1,7 @@
 <script lang="ts">
 	import Header from '$lib/header/Header.svelte';
-	import '@unocss/reset/normalize.css'
+	import '@unocss/reset/tailwind.css';
 	import 'uno.css';
-	import '../app.css';
 </script>
 
 <Header />
