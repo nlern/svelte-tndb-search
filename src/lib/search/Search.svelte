@@ -1,9 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 
-	// import AutoComplete from 'simple-svelte-autocomplete';
-	// const colors = ['White', 'Red', 'Yellow', 'Green', 'Blue', 'Black'];
-	// let selectedColor;
 	let formEl: HTMLElement | null;
 	let x: number = 0;
 	let w: number = 0;
@@ -37,10 +34,3 @@
 		</ul>
 	{/if}
 </form>
-<!-- <div class="flex justify-center items-center">
-	<AutoComplete
-		items={colors}
-		bind:selectedItem={selectedColor}
-		className="rounded border-1 border-gray-300 focus:border-gray-600 focus:outline-2 focus:shadow-md focus:outline-blue-300"
-	/>
-</div> -->
