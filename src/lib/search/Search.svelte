@@ -38,6 +38,7 @@
 
 	function clearSearch() {
 		q = null;
+		prevQ = null;
 	}
 
 	function enableSearch() {
@@ -47,6 +48,7 @@
 
 	function disableSearch() {
 		search = false;
+		prevQ = null;
 	}
 
 	onMount(() => {
