@@ -1,36 +1,103 @@
 <script lang="ts">
+	import type { SearchResponse, SearchResultItem } from 'src/types';
 	import { onMount } from 'svelte';
+	import { Circle } from 'svelte-loading-spinners';
 
-	let formEl: HTMLElement | null;
+	let inputEl: HTMLElement | null;
 	let x: number = 0;
 	let w: number = 0;
 	let t: number = 0;
+	let results: SearchResultItem[] | null = null;
+	let q: string | null = null;
+	let fetching: boolean = false;
+	let prevQ: string | null = null;
+
+	$: showResults = q && !fetching && results;
+	$: hasQuery = q && !fetching;
+
+	function setAutoCompletePosition() {
+		if (inputEl) {
+			const d = inputEl.getBoundingClientRect();
+			x = d.x;
+			w = d.width;
+			t = d.bottom;
+		}
+	}
+
+	let windowResizeTimer = null;
+	function updateSearchResultsPosition() {
+		if (windowResizeTimer) {
+			clearTimeout(windowResizeTimer);
+		}
+		windowResizeTimer = setTimeout(() => {
+			setAutoCompletePosition();
+		}, 400);
+	}
+
+	function clearSearch() {
+		q = null;
+	}
+
 	onMount(() => {
-		const d = formEl.getBoundingClientRect();
-		x = d.x;
-		w = d.width;
-		t = d.bottom;
+		setAutoCompletePosition();
 	});
+
+	let timer = null;
+
+	function onQuery() {
+		if (timer) {
+			clearTimeout(timer);
+		}
+		timer = setTimeout(async () => {
+			if (!q || q === prevQ) {
+				return;
+			}
+			fetching = true;
+			prevQ = q;
+			const url = `./movies.json?q=${encodeURI(q)}`;
+			const response = await fetch(url);
+			const parsed_response = (await response.json()) as SearchResponse;
+			results = parsed_response.results;
+			fetching = false;
+		}, 400);
+	}
 </script>
 
-<form class="flex justify-center items-center relative" autocomplete="off" bind:this={formEl}>
+<svelte:window on:resize={updateSearchResultsPosition} />
+
+<form
+	class="flex justify-center items-center relative"
+	autocomplete="off"
+	on:submit|preventDefault={() => {}}
+>
 	<input
+		bind:value={q}
+		bind:this={inputEl}
+		on:input={onQuery}
 		type="text"
 		name="q"
 		id="query"
-		class="h-8 p-2 w-full rounded border-1 border-gray-300"
-		focus="border-3 outline-none border-blue-300"
+		class="h-8 p-2 w-full rounded border-1 border-gray-300 focus:border-3 focus:outline-none focus:border-blue-300"
 		placeholder="Search for movies"
 	/>
-	{#if false}
+	{#if showResults}
 		<ul
-			class="z-10 bg-white border border-gray-300 fixed"
+			class="z-10 bg-white border border-gray-300 fixed max-h-40 overflow-auto"
 			style={`left:${x}px;width:${w}px;top:${t}px`}
 		>
-			<li class="h-8 p-1 border-b-1 border-gray-300">a</li>
-			<li class="h-8 p-1 border-b-1 border-gray-300">a</li>
-			<li class="h-8 p-1 border-b-1 border-gray-300">a</li>
-			<li class="h-8 p-1">a</li>
+			{#each results as movie (movie.id)}
+				<li class="min-h-8 p-2 border-b-1 border-gray-300 shadow">
+					{movie.title}
+				</li>
+			{/each}
 		</ul>
 	{/if}
+
+	<div class="absolute right-1">
+		{#if fetching}
+			<Circle size="24" color="#FF3E00" unit="px" duration="1s" />
+		{:else if hasQuery}
+			<button class="i-carbon-close" on:click={clearSearch} />
+		{/if}
+	</div>
 </form>

@@ -1,7 +1,7 @@
 <script lang="ts">
-	import Header from '$lib/header/Header.svelte';
-	import '@unocss/reset/tailwind.css';
 	import 'uno.css';
+	import '@unocss/reset/tailwind.css';
+	import Header from '$lib/header/Header.svelte';
 </script>
 
 <Header />
