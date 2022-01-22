@@ -1,7 +1,8 @@
 <script lang="ts">
-	import type { SearchResponse, SearchResultItem } from 'src/types';
 	import { onMount } from 'svelte';
 	import { Circle } from 'svelte-loading-spinners';
+	import { movie as MovieStore } from '$lib/stores';
+	import type { SearchResponse, SearchResultItem } from 'src/types';
 
 	let inputEl: HTMLElement | null;
 	let x: number = 0;
@@ -11,8 +12,9 @@
 	let q: string | null = null;
 	let fetching: boolean = false;
 	let prevQ: string | null = null;
+	let search = true;
 
-	$: showResults = q && !fetching && results;
+	$: showResults = q && !fetching && results && search;
 	$: hasQuery = q && !fetching;
 
 	function setAutoCompletePosition() {
@@ -38,6 +40,15 @@
 		q = null;
 	}
 
+	function enableSearch() {
+		search = true;
+		results = [];
+	}
+
+	function disableSearch() {
+		search = false;
+	}
+
 	onMount(() => {
 		setAutoCompletePosition();
 	});
@@ -49,7 +60,7 @@
 			clearTimeout(timer);
 		}
 		timer = setTimeout(async () => {
-			if (!q || q === prevQ) {
+			if (!q || q === prevQ || !search) {
 				return;
 			}
 			fetching = true;
@@ -60,6 +71,12 @@
 			results = parsed_response.results;
 			fetching = false;
 		}, 400);
+	}
+
+	function resultChosen(movie: SearchResultItem) {
+		disableSearch();
+		q = movie.title;
+		MovieStore.set(movie);
 	}
 </script>
 
@@ -74,6 +91,7 @@
 		bind:value={q}
 		bind:this={inputEl}
 		on:input={onQuery}
+		on:keydown={enableSearch}
 		type="text"
 		name="q"
 		id="query"
@@ -86,7 +104,10 @@
 			style={`left:${x}px;width:${w}px;top:${t}px`}
 		>
 			{#each results as movie (movie.id)}
-				<li class="min-h-8 p-2 border-b-1 border-gray-300 shadow">
+				<li
+					class="min-h-8 p-2 border-b-1 border-gray-300 shadow cursor-pointer hover:bg-gray-500 hover:color-white"
+					on:click={() => resultChosen(movie)}
+				>
 					{movie.title}
 				</li>
 			{/each}
