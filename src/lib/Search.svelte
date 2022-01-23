@@ -102,7 +102,7 @@
 	/>
 	{#if showResults}
 		<ul
-			class="z-10 bg-white border border-gray-300 fixed max-h-40 overflow-auto"
+			class="z-999 bg-white border border-gray-300 fixed max-h-40 overflow-auto"
 			style={`left:${x}px;width:${w}px;top:${t}px`}
 		>
 			{#each results as movie (movie.id)}
