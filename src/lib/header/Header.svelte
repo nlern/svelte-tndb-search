@@ -4,7 +4,7 @@
 	import Search from '$lib/Search.svelte';
 </script>
 
-<header class="h-16 py-2 px-4 border-1 border-b-gray-300 bg-gray-300">
+<header class="h-16 py-2 px-4 border-1 bg-gray-800 color-gray-300 border-gray-800">
 	<div class="container flex justify-center items-center max-w-xl m-auto gap-4">
 		<div class="w-8">
 			<a href="/">

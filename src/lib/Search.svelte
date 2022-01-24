@@ -97,17 +97,17 @@
 		type="text"
 		name="q"
 		id="query"
-		class="h-8 p-2 w-full rounded border-1 border-gray-300 focus:border-3 focus:outline-none focus:border-blue-300"
+		class="h-8 p-2 w-full rounded border-1 border-gray-300 bg-gray-600 border-gray-300 color-gray-400 focus:outline-none focus:border-0"
 		placeholder="Search for movies"
 	/>
 	{#if showResults}
 		<ul
-			class="z-999 bg-white border border-gray-300 fixed max-h-40 overflow-auto"
+			class="z-999 bg-white border fixed max-h-40 overflow-auto bg-gray-600 color-gray-400"
 			style={`left:${x}px;width:${w}px;top:${t}px`}
 		>
 			{#each results as movie (movie.id)}
 				<li
-					class="min-h-8 p-2 border-b-1 border-gray-300 shadow cursor-pointer hover:bg-gray-500 hover:color-white"
+					class="min-h-8 p-2 border-b-1 bg-gray-600 color-gray-400 shadow cursor-pointer hover:bg-gray-500 hover:color-white"
 					on:click={() => resultChosen(movie)}
 				>
 					{movie.title}
