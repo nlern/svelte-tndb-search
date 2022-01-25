@@ -3,11 +3,45 @@
 	import type { MovieInfoResponse } from 'src/types';
 	import { format } from 'date-fns';
 
-	let movieInfo: MovieInfoResponse = null;
-	let releaseDate: string = null;
+	const currencyFormatter = new Intl.NumberFormat('en-US', {
+		style: 'currency',
+		currency: 'USD',
+		maximumFractionDigits: 0,
+		minimumFractionDigits: 0
+	});
+
+	let movieInfo: MovieInfoResponse | null = null;
+	let releaseDate: string = '';
+	let budget: string = '';
+	let revenue: string = '';
+	let producers: string = '';
+	let profit: boolean = true;
+	let ratingClass: string = '';
+
+	function getRatingClass(rating: number) {
+		if (rating <= 3) {
+			return 'red';
+		}
+		if (rating > 3 && rating < 8) {
+			return 'yellow';
+		}
+		if (rating >= 8) {
+			return 'green';
+		}
+	}
 
 	$: if (movieInfo) {
-		releaseDate = format(new Date(movieInfo.release_date), 'd MMM, yyyy');
+		if (movieInfo.release_date) {
+			releaseDate = format(new Date(movieInfo.release_date), 'yyyy');
+		} else {
+			releaseDate = '';
+		}
+		budget = currencyFormatter.format(Math.round(movieInfo.budget));
+		revenue = currencyFormatter.format(movieInfo.revenue);
+		profit = movieInfo.revenue > movieInfo.budget;
+		if (Array.isArray(movieInfo.production_companies)) {
+			producers = movieInfo.production_companies.map((p) => p.name).join(', ');
+		}
 	}
 
 	movie.subscribe(async (mv) => {
@@ -22,28 +56,59 @@
 </script>
 
 {#if movieInfo}
-	<article class="h-full max-w-4xl p-4 mt-20 p-8 flex-1 flex flex-col justify-center">
-		<header class="mb-4">
+	<article class="h-full max-w-4xl p-4 m-t-20 p-8 flex-1 flex flex-col justify-center">
+		<header class="m-b-4">
 			<h1 class="text-18 color-white font-semibold drop-shadow-lg">
 				{movieInfo.title}
 			</h1>
-			<h2 class="text-8 color-gray-200 font-normal drop-shadow-lg italic">
+			<h2 class="text-8 color-gray-200 font-normal drop-shadow-lg italic m-b-4">
 				{movieInfo.tagline}
 			</h2>
 			<section>
-				<p class="flex justify-between items-center">
-					<span class="text-4 color-gray-300 align-middle"><em>Release Date: </em>{releaseDate}</span>
-					<span class="text-4 border color-gray-800 p-2 rounded bg-gray-400 font-semibold">{movieInfo.runtime} minutes</span>
+				<p class="flex items-center gap-6">
+					<span class="text-4 color-gray-300 p-2 rounded bg-gray-600/75"
+						>{movieInfo.runtime} minutes</span
+					>
+					<span
+						class="text-4 color-gray-200 p-2 rounded"
+						class:bg-red-600={movieInfo.vote_average <= 3}
+						class:bg-yellow-600={movieInfo.vote_average > 3 && movieInfo.vote_average < 8}
+						class:bg-green-600={movieInfo.vote_average >= 8}>{movieInfo.vote_average}</span
+					>
 				</p>
 			</section>
 		</header>
 		<p class="text-5 text-gray-300 drop-shadow-lg text-justify mb-6">
 			{movieInfo.overview}
 		</p>
-		<section class="flex gap-4">
+		<section class="flex gap-4 m-b-6">
 			{#each movieInfo.genres as genre (genre.id)}
-				<div class="genre border border-gray-400 color-gray-300 p-2 rounded-1">{genre.name}</div>
+				<div class="color-gray-300 p-2 rounded-1 bg-sky-600/50">{genre.name}</div>
 			{/each}
+		</section>
+		<section class="flex flex-row gap-12 m-b-6">
+			<section>
+				<header>
+					<h2 class="text-8 color-gray-200 font-normal drop-shadow-lg">Budget</h2>
+				</header>
+				<p class="text-12 color-green-500 font-normal">
+					{budget}
+				</p>
+			</section>
+
+			<section>
+				<header>
+					<h2 class="text-8 color-gray-200 font-normal drop-shadow-lg">Revenue</h2>
+				</header>
+				<p class="text-12 font-normal" class:color-green-500={profit} class:color-red-500={!profit}>
+					{revenue}
+				</p>
+			</section>
+		</section>
+
+		<section class="text-4 color-gray-300">
+			© {releaseDate}
+			{producers}
 		</section>
 	</article>
 {/if}
