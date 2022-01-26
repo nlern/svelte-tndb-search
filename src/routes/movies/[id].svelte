@@ -30,7 +30,10 @@
 
 <svelte:head>
 	<title>{movie?.title} - TMDB Movie Search</title>
+	<meta property="og:title" content={`${movie?.title} - TMDB Movie Search`} />
+	<meta name="twitter:title" content={`${movie?.title} - TMDB Movie Search`} />
 	<meta name="description" content={movie?.overview} />
+	<meta name="twitter:description" content={movie?.overview} />
 </svelte:head>
 
 <MovieInfo movieInfo={movie} />
