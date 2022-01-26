@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { movie } from '$lib/stores/movie';
 	import type { MovieInfoResponse } from 'src/types';
 
 	const currencyFormatter = new Intl.NumberFormat('en-US', {
@@ -13,7 +12,7 @@
 		year: 'numeric'
 	});
 
-	let movieInfo: MovieInfoResponse | null = null;
+	export let movieInfo: MovieInfoResponse | null = null;
 	let releaseDate: string = '';
 	let budget: string = '';
 	let revenue: string = '';
@@ -33,19 +32,13 @@
 			producers = movieInfo.production_companies.map((p) => p.name).join(', ');
 		}
 	}
-
-	movie.subscribe(async (mv) => {
-		movieInfo = null;
-		if (!mv || !mv.id) {
-			return;
-		}
-		const url = `./movies/${mv.id}.json`;
-		const response = await fetch(url);
-		movieInfo = (await response.json()) as MovieInfoResponse;
-	});
 </script>
 
 {#if movieInfo}
+	<div
+		id="bg"
+		style:background-image={`url(https://image.tmdb.org/t/p/original/${movieInfo.backdrop_path})`}
+	/>
 	<article class="h-full max-w-4xl p-4 m-t-20 p-8 flex-1 flex flex-col justify-center">
 		<header class="m-b-4">
 			<h1 class="text-18 color-white font-semibold drop-shadow-lg">
@@ -102,3 +95,17 @@
 		</section>
 	</article>
 {/if}
+
+<style>
+	#bg {
+		background-color: #333;
+		-webkit-background-size: cover;
+		-moz-background-size: cover;
+		-o-background-size: cover;
+		background-size: cover;
+		z-index: -2;
+		position: fixed;
+		height: 100%;
+		width: 100%;
+	}
+</style>

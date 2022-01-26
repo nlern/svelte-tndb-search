@@ -3,19 +3,6 @@
 	import '@unocss/reset/tailwind.css';
 	import '../app.css';
 	import Header from '$lib/header/Header.svelte';
-	import { movie } from '$lib/stores';
-
-	let backgroundImage = '';
-
-	movie.subscribe((movie) => {
-		if (movie) {
-			backgroundImage = `${movie.backdrop_path}`;
-			const bgEl = document.querySelector('#bg') as HTMLElement | null;
-			if (bgEl) {
-				bgEl.style.backgroundImage = `url(https://image.tmdb.org/t/p/original/${backgroundImage})`;
-			}
-		}
-	});
 </script>
 
 <Header />

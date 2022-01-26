@@ -3,13 +3,14 @@
 	import { Circle } from 'svelte-loading-spinners';
 	import { movie as MovieStore } from '$lib/stores';
 	import type { SearchResponse, SearchResultItem } from 'src/types';
+	import { goto } from '$app/navigation';
 
 	let inputEl: HTMLElement | null;
 	let x: number = 0;
 	let w: number = 0;
 	let t: number = 0;
 	let results: SearchResultItem[] | null = null;
-	let q: string | null = null;
+	export let q: string | null = null;
 	let fetching: boolean = false;
 	let prevQ: string | null = null;
 	let search = true;
@@ -67,18 +68,23 @@
 			}
 			fetching = true;
 			prevQ = q;
-			const url = `./movies.json?q=${encodeURI(q)}`;
+			const url = `/movies.json?q=${encodeURI(q)}`;
 			const response = await fetch(url);
 			const parsed_response = (await response.json()) as SearchResponse;
-			results = parsed_response.results;
+			if (!parsed_response) {
+				results = [];
+			} else {
+				results = parsed_response.results;
+			}
 			fetching = false;
 		}, 400);
 	}
 
-	function resultChosen(movie: SearchResultItem) {
+	async function resultChosen(movie: SearchResultItem) {
 		disableSearch();
 		q = movie.title;
 		MovieStore.set(movie);
+		await goto('/movies/' + movie.id);
 	}
 </script>
 
