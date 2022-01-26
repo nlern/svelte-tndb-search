@@ -3,11 +3,11 @@
 </script>
 
 <script lang="ts">
-	import MovieInfo from '$lib/MovieInfo.svelte';
+	import Welcome from '$lib/Welcome/Welcome.svelte';
 </script>
 
 <svelte:head>
-	<title>Home</title>
+	<title>Home - TMDB Movie Search</title>
 </svelte:head>
 
-<MovieInfo />
+<Welcome />
