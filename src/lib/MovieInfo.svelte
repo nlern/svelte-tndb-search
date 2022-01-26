@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { movie } from '$lib/stores/movie';
 	import type { MovieInfoResponse } from 'src/types';
-	import { format } from 'date-fns';
 
 	const currencyFormatter = new Intl.NumberFormat('en-US', {
 		style: 'currency',
@@ -10,29 +9,20 @@
 		minimumFractionDigits: 0
 	});
 
+	const yearFormatter = new Intl.DateTimeFormat('default', {
+		year: 'numeric'
+	});
+
 	let movieInfo: MovieInfoResponse | null = null;
 	let releaseDate: string = '';
 	let budget: string = '';
 	let revenue: string = '';
 	let producers: string = '';
 	let profit: boolean = true;
-	let ratingClass: string = '';
-
-	function getRatingClass(rating: number) {
-		if (rating <= 3) {
-			return 'red';
-		}
-		if (rating > 3 && rating < 8) {
-			return 'yellow';
-		}
-		if (rating >= 8) {
-			return 'green';
-		}
-	}
 
 	$: if (movieInfo) {
 		if (movieInfo.release_date) {
-			releaseDate = format(new Date(movieInfo.release_date), 'yyyy');
+			releaseDate = yearFormatter.format(new Date(movieInfo.release_date));
 		} else {
 			releaseDate = '';
 		}
@@ -66,7 +56,7 @@
 			</h2>
 			<section>
 				<p class="flex items-center gap-6">
-					<span class="text-4 color-gray-300 p-2 rounded bg-gray-600/75"
+					<span class="text-4 color-gray-300 p-2 rounded bg-gray-600"
 						>{movieInfo.runtime} minutes</span
 					>
 					<span
